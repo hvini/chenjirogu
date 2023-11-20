@@ -150,22 +150,25 @@ fn separate_features_and_bug_fixes(project: &Project) -> (String, String) {
     let mut project_bug_fixes = String::new();
 
     for commit in &project.commits {
-        let message: String = commit.message.split(": ").nth(1).unwrap().to_string();
-        let commit_link = format!("{}/commits/{}", project.remote, commit.hash);
-        if commit.message.starts_with("feat:") {
-            project_features.push_str(&format!(
-                " - {} [#{}]({})\n",
-                message,
-                &commit.hash[0..8],
-                commit_link
-            ));
-        } else if commit.message.starts_with("fix:") {
-            project_bug_fixes.push_str(&format!(
-                " - {} [#{}]({})\n",
-                message,
-                &commit.hash[0..8],
-                commit_link
-            ));
+        let message_parts: Vec<&str> = commit.message.split(": ").collect();
+        if message_parts.len() == 2 {
+            let message: String = commit.message.split(": ").nth(1).unwrap().to_string();
+            let commit_link = format!("{}/commits/{}", project.remote, commit.hash);
+            if commit.message.starts_with("feat:") {
+                project_features.push_str(&format!(
+                    " - {} [#{}]({})\n",
+                    message,
+                    &commit.hash[0..8],
+                    commit_link
+                ));
+            } else if commit.message.starts_with("fix:") {
+                project_bug_fixes.push_str(&format!(
+                    " - {} [#{}]({})\n",
+                    message,
+                    &commit.hash[0..8],
+                    commit_link
+                ));
+            }
         }
     }
 
